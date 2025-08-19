@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms - Chat Web Room</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/rooms.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Chat Web Room</h1>
+            <nav>
+                <span class="user-info">
+                    Welcome, <span id="username-display">User</span>
+                </span>
+                <button onclick="Auth.logout(); Router.navigate('#home')" class="nav-btn logout-btn">Logout</button>
+            </nav>
+        </header>
+        
+        <main id="main-content">
+            <div class="rooms-container">
+                <div class="rooms-header">
+                    <h2>Chat Rooms</h2>
+                    <button id="create-room-btn" class="btn btn-primary">
+                        <span class="btn-icon">+</span>
+                        Create Room
+                    </button>
+                </div>
+
+                <div id="error-container" class="error-message hidden"></div>
+                <div id="success-container" class="success-message hidden"></div>
+
+                <!-- Create Room Modal -->
+                <div id="create-room-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Create New Room</h3>
+                            <button class="modal-close" id="close-modal">&times;</button>
+                        </div>
+                        <form id="create-room-form" class="modal-form">
+                            <div class="form-group">
+                                <label for="room-name">Room Name</label>
+                                <input 
+                                    type="text" 
+                                    id="room-name" 
+                                    name="roomName" 
+                                    required 
+                                    maxlength="50"
+                                    placeholder="Enter room name"
+                                    pattern="[a-zA-Z0-9\s_-]+"
+                                    title="Room name can contain letters, numbers, spaces, underscores, and hyphens"
+                                >
+                                <div class="field-error" id="room-name-error"></div>
+                                <div class="field-help">Up to 50 characters, letters, numbers, spaces, underscores, and hyphens</div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" id="cancel-create">Cancel</button>
+                                <button type="submit" class="btn btn-primary" id="submit-create">
+                                    <span class="btn-text">Create Room</span>
+                                    <span class="btn-loading hidden">Creating...</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Rooms Grid -->
+                <div class="rooms-section">
+                    <div class="section-tabs">
+                        <button class="tab-btn active" data-tab="all-rooms">All Rooms</button>
+                        <button class="tab-btn" data-tab="my-rooms">My Rooms</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <!-- All Rooms Tab -->
+                        <div id="all-rooms" class="tab-pane active">
+                            <div class="rooms-grid" id="all-rooms-grid">
+                                <div class="loading-spinner" id="all-rooms-loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading rooms...</p>
+                                </div>
+                                <div class="empty-state hidden" id="all-rooms-empty">
+                                    <div class="empty-icon">💬</div>
+                                    <h3>No rooms available</h3>
+                                    <p>Be the first to create a chat room!</p>
+                                    <button class="btn btn-primary" onclick="document.getElementById('create-room-btn').click()">
+                                        Create First Room
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- My Rooms Tab -->
+                        <div id="my-rooms" class="tab-pane">
+                            <div class="rooms-grid" id="my-rooms-grid">
+                                <div class="loading-spinner hidden" id="my-rooms-loading">
+                                    <div class="spinner"></div>
+                                    <p>Loading your rooms...</p>
+                                </div>
+                                <div class="empty-state hidden" id="my-rooms-empty">
+                                    <div class="empty-icon">🏠</div>
+                                    <h3>You haven't created any rooms yet</h3>
+                                    <p>Create your first room to start chatting!</p>
+                                    <button class="btn btn-primary" onclick="document.getElementById('create-room-btn').click()">
+                                        Create Room
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Statistics -->
+                <div class="stats-section">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-rooms-count">0</div>
+                        <div class="stat-label">Total Rooms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="my-rooms-count">0</div>
+                        <div class="stat-label">My Rooms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="active-users-count">0</div>
+                        <div class="stat-label">Active Users</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/router.js"></script>
+    <script src="../js/validation.js"></script>
+    <script src="../js/rooms.js"></script>
+</body>
+</html>
