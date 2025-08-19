@@ -112,17 +112,21 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         
         // Set loading state
-        setLoading(true);
+        const loaderId = LoadingManager.showFormLoading(form, {
+            message: 'Creating account...'
+        });
         
         try {
-            // Make registration request
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+            // Make registration request with error handling
+            const response = await ErrorHandler.wrapAsync(async () => {
+                return await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+            }, { context: 'registration' })();
             
             const data = await response.json();
             
@@ -135,19 +139,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirect to rooms page after a short delay
                 setTimeout(() => {
-                    Router.navigate('#rooms');
+                    Router.navigate('/rooms');
                 }, 1500);
                 
             } else {
-                // Registration failed
+                // Registration failed - let ErrorHandler handle it
+                ErrorHandler.handleError({
+                    type: 'VALIDATION',
+                    message: data.error?.message || 'Registration failed',
+                    details: data.error,
+                    source: 'registration'
+                });
+                
                 handleRegistrationError(data.error);
             }
             
         } catch (error) {
+            // Network errors are already handled by ErrorHandler
             console.error('Registration error:', error);
-            showError('Network error. Please check your connection and try again.');
+            showError('Registration failed. Please try again.');
         } finally {
-            setLoading(false);
+            LoadingManager.hideLoading(loaderId);
         }
     }
 
@@ -225,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkAuthStatus() {
         if (Auth.isAuthenticated()) {
             // User is already logged in, redirect to rooms
-            Router.navigate('#rooms');
+            Router.navigate('/rooms');
         }
     }
 

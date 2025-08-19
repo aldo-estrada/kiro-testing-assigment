@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!roomId) {
         showNotification('No room selected. Redirecting to rooms...', 'error');
         setTimeout(() => {
-            window.location.href = '/pages/rooms.html';
+            Router.navigate('/rooms');
         }, 2000);
         return;
     }
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const participantCount = document.getElementById('participant-count');
     const participantsCountBadge = document.getElementById('participants-count-badge');
     const currentUsername = document.getElementById('current-username');
-    const logoutBtn = document.getElementById('logout-btn');
+    // Logout button is now handled by LogoutManager
     const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
     const newMessagesCount = scrollToBottomBtn.querySelector('.new-messages-count');
     const typingIndicators = document.getElementById('typing-indicators');
@@ -81,6 +81,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Chat initialization error:', error);
+            ErrorHandler.handleError({
+                type: 'SOCKET',
+                message: 'Failed to connect to chat',
+                details: { error: error.message },
+                source: 'chat-init'
+            });
             showNotification('Failed to connect to chat. Please try again.', 'error');
             showConnectionOverlay(true);
         }
@@ -112,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         backBtn.addEventListener('click', goBackToRooms);
         participantsToggle.addEventListener('click', toggleParticipantsPanel);
         closeParticipants.addEventListener('click', closeParticipantsPanel);
-        logoutBtn.addEventListener('click', handleLogout);
+        // Logout is now handled by LogoutManager
         scrollToBottomBtn.addEventListener('click', scrollToBottom);
         emojiBtn.addEventListener('click', toggleEmojiPicker);
         manualReconnectBtn.addEventListener('click', handleManualReconnect);
@@ -171,6 +177,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error loading room info:', error);
+            ErrorHandler.handleError({
+                type: 'SERVER',
+                message: 'Failed to load room information',
+                details: { error: error.message },
+                source: 'load-room-info'
+            });
             showNotification('Failed to load room information', 'error');
         }
     }
@@ -200,6 +212,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error loading message history:', error);
+            ErrorHandler.handleError({
+                type: 'SERVER',
+                message: 'Failed to load message history',
+                details: { error: error.message },
+                source: 'load-message-history'
+            });
             showNotification('Failed to load message history', 'error');
         }
     }
@@ -358,6 +376,12 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error sending message:', error);
+            ErrorHandler.handleError({
+                type: 'SOCKET',
+                message: 'Failed to send message',
+                details: { error: error.message },
+                source: 'send-message'
+            });
             showNotification('Failed to send message. Please try again.', 'error');
         }
     }
@@ -525,28 +549,11 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('currentRoomId');
         
         // Navigate to rooms
-        window.location.href = '/pages/rooms.html';
+        Router.navigate('/rooms');
     }
 
-    /**
-     * Handle logout
-     */
-    function handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
-            // Leave room and disconnect
-            if (SocketManager.getCurrentRoom()) {
-                SocketManager.leaveRoom();
-            }
-            SocketManager.disconnect();
-            
-            // Clear session storage
-            sessionStorage.removeItem('currentRoomId');
-            
-            // Logout
-            Auth.logout();
-            window.location.href = '/';
-        }
-    }
+    // Logout functionality is now handled by LogoutManager
+    // The LogoutManager will automatically handle room cleanup and disconnection
 
     /**
      * Handle keyboard shortcuts

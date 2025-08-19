@@ -6,14 +6,16 @@
     <title>Login - Chat Web Room</title>
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/auth.css">
+    <link rel="stylesheet" href="../styles/errorHandler.css">
+    <link rel="stylesheet" href="../styles/loadingManager.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Chat Web Room</h1>
             <nav>
-                <button onclick="Router.navigate('#register')" class="nav-btn">Register</button>
-                <button onclick="Router.navigate('#home')" class="nav-btn">Home</button>
+                <button onclick="Router.navigate('/register')" class="nav-btn">Register</button>
+                <button onclick="Router.navigate('/')" class="nav-btn">Home</button>
             </nav>
         </header>
         
@@ -71,7 +73,7 @@
                     </form>
                     
                     <div class="auth-footer">
-                        <p>Don't have an account? <a href="#register" onclick="Router.navigate('#register')">Create one</a></p>
+                        <p>Don't have an account? <a href="#register" onclick="Router.navigate('/register')">Create one</a></p>
                     </div>
                 </div>
             </div>
@@ -79,9 +81,18 @@
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/loadingManager.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/router.js"></script>
+    <script src="../js/logout.js"></script>
     <script src="../js/validation.js"></script>
     <script src="../js/login.js"></script>
+    <script>
+        // Initialize router when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            Router.init();
+        });
+    </script>
 </body>
 </html>

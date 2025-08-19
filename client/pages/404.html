@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/auth.css">
+    <link rel="stylesheet" href="../styles/errorHandler.css">
+    <link rel="stylesheet" href="../styles/loadingManager.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>404 - Page Not Found</h1>
+                <p>The page you're looking for doesn't exist.</p>
+            </div>
+            
+            <div class="error-content">
+                <div class="error-icon">🔍</div>
+                <p>Sorry, we couldn't find the page you were looking for.</p>
+                <p>It might have been moved, deleted, or you entered the wrong URL.</p>
+            </div>
+            
+            <div class="auth-actions">
+                <button id="go-home-btn" class="btn btn-primary">Go Home</button>
+                <button id="go-back-btn" class="btn btn-secondary">Go Back</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/loadingManager.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/router.js"></script>
+    <script src="../js/logout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize router
+            Router.init();
+            
+            const goHomeBtn = document.getElementById('go-home-btn');
+            const goBackBtn = document.getElementById('go-back-btn');
+            
+            goHomeBtn.addEventListener('click', function() {
+                if (Auth.isAuthenticated()) {
+                    Router.navigate('/rooms');
+                } else {
+                    Router.navigate('/login');
+                }
+            });
+            
+            goBackBtn.addEventListener('click', function() {
+                Router.back();
+            });
+        });
+    </script>
+</body>
+</html>

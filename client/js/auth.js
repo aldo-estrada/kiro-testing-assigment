@@ -94,9 +94,57 @@ const Auth = {
     /**
      * Remove token and user info (logout)
      */
-    logout() {
-        localStorage.removeItem(this.TOKEN_KEY);
-        localStorage.removeItem(this.USER_KEY);
+    async logout() {
+        try {
+            // Call server logout endpoint if available
+            const token = this.getToken();
+            if (token) {
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Server logout failed:', error);
+                    // Continue with client-side logout even if server call fails
+                }
+            }
+
+            // Disconnect Socket.io if connected
+            if (window.SocketManager && window.SocketManager.isSocketConnected()) {
+                // Leave current room if in one
+                if (window.SocketManager.getCurrentRoom()) {
+                    window.SocketManager.leaveRoom();
+                }
+                // Disconnect socket
+                window.SocketManager.disconnect();
+            }
+
+            // Clear session storage
+            sessionStorage.clear();
+
+            // Clear local storage auth data
+            localStorage.removeItem(this.TOKEN_KEY);
+            localStorage.removeItem(this.USER_KEY);
+
+            // Clear any other auth-related data
+            localStorage.removeItem('rememberedUsername');
+
+            // Emit logout event for other components to listen to
+            this.emitLogoutEvent();
+
+            console.log('Logout completed successfully');
+
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Force cleanup even if there are errors
+            localStorage.removeItem(this.TOKEN_KEY);
+            localStorage.removeItem(this.USER_KEY);
+            sessionStorage.clear();
+        }
     },
 
     /**
@@ -163,6 +211,65 @@ const Auth = {
             return false;
         }
         return true;
+    },
+
+    /**
+     * Emit logout event for other components to listen to
+     */
+    emitLogoutEvent() {
+        const event = new CustomEvent('auth:logout', {
+            detail: {
+                timestamp: Date.now(),
+                reason: 'user_initiated'
+            }
+        });
+        window.dispatchEvent(event);
+    },
+
+    /**
+     * Logout and redirect to specified page
+     */
+    async logoutAndRedirect(redirectPath = '/') {
+        await this.logout();
+        
+        // Use router if available, otherwise use window.location
+        if (window.Router && typeof window.Router.navigate === 'function') {
+            window.Router.navigate(redirectPath);
+        } else {
+            window.location.href = redirectPath === '/' ? '/' : `/pages${redirectPath}.html`;
+        }
+    },
+
+    /**
+     * Add logout event listener
+     */
+    onLogout(callback) {
+        window.addEventListener('auth:logout', callback);
+    },
+
+    /**
+     * Remove logout event listener
+     */
+    offLogout(callback) {
+        window.removeEventListener('auth:logout', callback);
+    },
+
+    /**
+     * Show logout confirmation dialog
+     */
+    confirmLogout(message = 'Are you sure you want to logout?') {
+        return confirm(message);
+    },
+
+    /**
+     * Handle logout with confirmation
+     */
+    async handleLogoutWithConfirmation(redirectPath = '/') {
+        if (this.confirmLogout()) {
+            await this.logoutAndRedirect(redirectPath);
+            return true;
+        }
+        return false;
     }
 };
 

@@ -46,17 +46,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Set loading state
-        setLoading(true);
+        const loaderId = LoadingManager.showFormLoading(form, {
+            message: 'Signing in...'
+        });
         
         try {
-            // Make login request
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
+            // Make login request with error handling
+            const response = await ErrorHandler.wrapAsync(async () => {
+                return await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+            }, { context: 'login' })();
             
             const data = await response.json();
             
@@ -72,19 +76,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Redirect to rooms page after a short delay
                 setTimeout(() => {
-                    Router.navigate('#rooms');
+                    Router.navigate('/rooms');
                 }, 1500);
                 
             } else {
-                // Login failed
+                // Login failed - let ErrorHandler handle it
+                ErrorHandler.handleError({
+                    type: 'AUTH',
+                    message: data.error?.message || 'Login failed',
+                    details: data.error,
+                    source: 'login'
+                });
+                
                 handleLoginError(data.error);
             }
             
         } catch (error) {
+            // Network errors are already handled by ErrorHandler
             console.error('Login error:', error);
-            showError('Network error. Please check your connection and try again.');
+            showError('Login failed. Please try again.');
         } finally {
-            setLoading(false);
+            LoadingManager.hideLoading(loaderId);
         }
     }
 
@@ -249,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function checkAuthStatus() {
         if (Auth.isAuthenticated()) {
             // User is already logged in, redirect to rooms
-            Router.navigate('#rooms');
+            Router.navigate('/rooms');
         }
     }
 

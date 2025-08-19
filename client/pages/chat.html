@@ -6,13 +6,15 @@
     <title>Chat - Chat Web Room</title>
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/chat.css">
+    <link rel="stylesheet" href="../styles/errorHandler.css">
+    <link rel="stylesheet" href="../styles/loadingManager.css">
 </head>
 <body>
     <div class="chat-container">
         <!-- Chat Header -->
         <header class="chat-header">
             <div class="header-left">
-                <button id="back-btn" class="back-btn" title="Back to rooms">
+                <button id="back-btn" class="back-btn" title="Back to rooms" onclick="Router.navigate('/rooms')">
                     <span class="back-icon">←</span>
                 </button>
                 <div class="room-info">
@@ -33,7 +35,7 @@
                 </button>
                 <div class="user-menu">
                     <span id="current-username" class="username">User</span>
-                    <button id="logout-btn" class="logout-btn" title="Logout">
+                    <button class="logout-btn" title="Logout" data-redirect-path="/" data-confirm-message="Are you sure you want to logout? You will leave the current chat room.">
                         <span class="logout-icon">🚪</span>
                     </button>
                 </div>
@@ -143,9 +145,18 @@
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/loadingManager.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/router.js"></script>
+    <script src="../js/logout.js"></script>
     <script src="../js/socket.js"></script>
     <script src="../js/chat.js"></script>
+    <script>
+        // Initialize router when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            Router.init();
+        });
+    </script>
 </body>
 </html>

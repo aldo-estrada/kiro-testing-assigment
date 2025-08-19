@@ -110,13 +110,22 @@ document.addEventListener('DOMContentLoaded', function() {
         showLoading('all-rooms', true);
         
         try {
-            const response = await Auth.makeAuthenticatedRequest('/api/rooms');
+            const response = await ErrorHandler.wrapAsync(async () => {
+                return await Auth.makeAuthenticatedRequest('/api/rooms');
+            }, { context: 'load-rooms' })();
+            
             const data = await response.json();
             
             if (data.success) {
                 allRooms = data.data.rooms;
                 displayRooms(allRooms, 'all-rooms');
             } else {
+                ErrorHandler.handleError({
+                    type: 'SERVER',
+                    message: data.error?.message || 'Failed to load rooms',
+                    details: data.error,
+                    source: 'load-rooms'
+                });
                 throw new Error(data.error?.message || 'Failed to load rooms');
             }
         } catch (error) {
@@ -518,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.joinRoom = function(roomId) {
         // Store room ID for chat page
         sessionStorage.setItem('currentRoomId', roomId);
-        window.location.href = '/pages/chat.html';
+        Router.navigate('/chat');
     };
 
     window.editRoom = function(roomId) {

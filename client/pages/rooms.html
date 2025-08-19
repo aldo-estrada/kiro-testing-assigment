@@ -6,6 +6,8 @@
     <title>Rooms - Chat Web Room</title>
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/rooms.css">
+    <link rel="stylesheet" href="../styles/errorHandler.css">
+    <link rel="stylesheet" href="../styles/loadingManager.css">
 </head>
 <body>
     <div class="container">
@@ -15,7 +17,7 @@
                 <span class="user-info">
                     Welcome, <span id="username-display">User</span>
                 </span>
-                <button onclick="Auth.logout(); Router.navigate('#home')" class="nav-btn logout-btn">Logout</button>
+                <button class="nav-btn logout-btn" data-redirect-path="/" data-confirm-message="Are you sure you want to logout? You will be redirected to the home page.">Logout</button>
             </nav>
         </header>
         
@@ -132,9 +134,25 @@
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="../js/errorHandler.js"></script>
+    <script src="../js/loadingManager.js"></script>
     <script src="../js/auth.js"></script>
     <script src="../js/router.js"></script>
+    <script src="../js/logout.js"></script>
     <script src="../js/validation.js"></script>
     <script src="../js/rooms.js"></script>
+    <script>
+        // Initialize router when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            Router.init();
+            
+            // Update username display
+            const user = Auth.getCurrentUser();
+            const usernameDisplay = document.getElementById('username-display');
+            if (user && user.username && usernameDisplay) {
+                usernameDisplay.textContent = user.username;
+            }
+        });
+    </script>
 </body>
 </html>

@@ -5,13 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Web Room</title>
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/errorHandler.css">
+    <link rel="stylesheet" href="styles/loadingManager.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Chat Web Room</h1>
             <nav id="navigation">
-                <!-- Navigation will be populated by JavaScript -->
+                <div class="nav-user-info user-only" style="display: none;">
+                    <span>Welcome, <span class="username-display">User</span></span>
+                    <button class="logout-btn nav-btn" data-redirect-path="/">Logout</button>
+                </div>
+                <div class="nav-guest-info guest-only">
+                    <span>Welcome, Guest</span>
+                </div>
             </nav>
         </header>
         
@@ -20,16 +28,67 @@
                 <h2>Welcome to Chat Web Room</h2>
                 <p>Connect with others in real-time chat rooms</p>
                 <div class="auth-buttons">
-                    <button onclick="window.location.href='/pages/login.html'">Login</button>
-                    <button onclick="window.location.href='/pages/register.html'">Register</button>
+                    <button id="login-btn">Login</button>
+                    <button id="register-btn">Register</button>
                 </div>
             </div>
         </main>
     </div>
     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="js/errorHandler.js"></script>
+    <script src="js/loadingManager.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/router.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/logout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize router
+            Router.init();
+            
+            // Set up navigation buttons
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => Router.navigate('/login'));
+            }
+            
+            if (registerBtn) {
+                registerBtn.addEventListener('click', () => Router.navigate('/register'));
+            }
+            
+            // Update UI based on authentication status
+            updateAuthUI();
+            
+            // Listen for auth changes
+            Auth.onLogout(() => {
+                updateAuthUI();
+            });
+            
+            // Check if user is already authenticated
+            if (Auth.isAuthenticated()) {
+                Router.navigate('/rooms');
+            }
+            
+            function updateAuthUI() {
+                const userInfo = document.querySelector('.nav-user-info');
+                const guestInfo = document.querySelector('.nav-guest-info');
+                const usernameDisplay = document.querySelector('.username-display');
+                
+                if (Auth.isAuthenticated()) {
+                    const user = Auth.getCurrentUser();
+                    if (user && user.username) {
+                        usernameDisplay.textContent = user.username;
+                    }
+                    userInfo.style.display = 'flex';
+                    guestInfo.style.display = 'none';
+                } else {
+                    userInfo.style.display = 'none';
+                    guestInfo.style.display = 'block';
+                }
+            }
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,266 @@
+/**
+ * Error Handler Styles
+ */
+
+/* Notification Container */
+.error-notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    max-width: 400px;
+    pointer-events: none;
+}
+
+/* Individual Notification */
+.error-notification {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 12px;
+    padding: 16px;
+    border-left: 4px solid #e74c3c;
+    pointer-events: auto;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+/* Notification Types */
+.error-notification-error {
+    border-left-color: #e74c3c;
+}
+
+.error-notification-warning {
+    border-left-color: #f39c12;
+}
+
+.error-notification-info {
+    border-left-color: #3498db;
+}
+
+.error-notification-success {
+    border-left-color: #27ae60;
+}
+
+/* Notification Content */
+.error-notification-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.error-notification-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.error-notification-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.error-notification-title {
+    font-size: 14px;
+    margin: 0;
+}
+
+.error-notification-message {
+    font-size: 13px;
+    color: #5a6c7d;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Notification Actions */
+.error-notification-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.error-notification-action {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #495057;
+}
+
+.error-notification-action:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.error-notification-action:active {
+    transform: translateY(1px);
+}
+
+/* Primary action styling */
+.error-notification-action[data-action="Retry"],
+.error-notification-action[data-action="Login"] {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.error-notification-action[data-action="Retry"]:hover,
+.error-notification-action[data-action="Login"]:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Loading Indicator */
+.error-handler-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+}
+
+.loading-message {
+    font-size: 14px;
+    text-align: center;
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .error-notification-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .error-notification {
+        margin-bottom: 8px;
+        padding: 12px;
+    }
+    
+    .error-notification-actions {
+        flex-wrap: wrap;
+    }
+    
+    .error-notification-action {
+        flex: 1;
+        min-width: 80px;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .error-notification {
+        background: #2c3e50;
+        color: #ecf0f1;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .error-notification-header {
+        color: #ecf0f1;
+    }
+    
+    .error-notification-message {
+        color: #bdc3c7;
+    }
+    
+    .error-notification-action {
+        background: #34495e;
+        border-color: #4a5f7a;
+        color: #ecf0f1;
+    }
+    
+    .error-notification-action:hover {
+        background: #4a5f7a;
+        border-color: #5a6f8a;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .error-notification {
+        border-width: 2px;
+        border-left-width: 6px;
+    }
+    
+    .error-notification-action {
+        border-width: 2px;
+        font-weight: 600;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .error-notification {
+        animation: none;
+    }
+    
+    .loading-spinner {
+        animation: none;
+        border-top-color: transparent;
+    }
+    
+    .error-notification-action {
+        transition: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .error-notification-container {
+        display: none;
+    }
+}
+
+/* Focus Styles for Accessibility */
+.error-notification-action:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
